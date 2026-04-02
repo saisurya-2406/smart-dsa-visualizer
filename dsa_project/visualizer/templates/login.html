@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DSA Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #8a2be2 0%, #9c27b0 100%); height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .row { width: 100%; }
+        .login-card { background: white; border-radius: 15px; box-shadow: 0 15px 40px rgba(138, 43, 226, 0.4); animation: slideIn 0.6s ease-out; border: 2px solid rgba(138, 43, 226, 0.1); }
+        @keyframes slideIn { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .login-card h2 { color: #8a2be2; font-weight: 700; font-size: 2rem; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05); }
+        .login-card p { color: #666; font-size: 0.95rem; }
+        .form-label { color: #8a2be2; font-weight: 600; }
+        .form-control { border: 2px solid #e8dff7; border-radius: 8px; padding: 0.75rem; transition: all 0.3s; font-size: 0.95rem; }
+        .form-control:focus { border-color: #8a2be2; box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.15); outline: none; }
+        .form-control::placeholder { color: #bbb; }
+        .btn-primary { background: linear-gradient(135deg, #8a2be2 0%, #9c27b0 100%); border: none; font-weight: 600; border-radius: 8px; padding: 0.75rem 1.5rem; transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(138, 43, 226, 0.3); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-secondary { background-color: #ccc; color: #333; border: none; font-weight: 600; border-radius: 8px; padding: 0.75rem 1.5rem; transition: all 0.3s; }\n        .btn-secondary:hover { background-color: #aaa; }\n        a { text-decoration: none; }\n    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="login-card p-5">
+                    <h2 class="text-center mb-4">🔒 Login to DSA Visualizer</h2>
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <div class="mb-3 d-none" id="confirmPasswordContainer">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="submitButton">Login</button>
+                    </form>
+                    <p class="text-center mt-3" id="toggleText">Don't have an account? <a href="#" id="toggleMode">Sign up</a></p>
+                    <a href="/" class="btn btn-secondary w-100 mt-2">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getUsers() {
+            let users = localStorage.getItem('dsa_users');
+            return users ? JSON.parse(users) : {};
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('dsa_users', JSON.stringify(users));
+        }
+
+        function setLoggedInUser(username) {
+            localStorage.setItem('dsa_user', username);
+        }
+
+        function toggleMode() {
+            const isSignup = document.getElementById('submitButton').innerText === 'Sign Up';
+            const confirmContainer = document.getElementById('confirmPasswordContainer');
+            const toggleText = document.getElementById('toggleText');
+            const submitButton = document.getElementById('submitButton');
+
+            if (isSignup) {
+                submitButton.innerText = 'Login';
+                confirmContainer.classList.add('d-none');
+                toggleText.innerHTML = "Don't have an account? <a href='#' id='toggleMode'>Sign up</a>";
+            } else {
+                submitButton.innerText = 'Sign Up';
+                confirmContainer.classList.remove('d-none');
+                toggleText.innerHTML = "Already have an account? <a href='#' id='toggleMode'>Login</a>";
+            }
+
+            document.getElementById('toggleMode').addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleMode();
+            });
+        }
+
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('dsa_user')) {
+                window.location.href = '/';
+                return;
+            }
+
+            document.getElementById('authForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const confirmPassword = document.getElementById('confirmPassword').value.trim();
+                const isSignup = document.getElementById('submitButton').innerText === 'Sign Up';
+
+                if (!username || !password) {
+                    alert('Please enter both username and password');
+                    return;
+                }
+
+                let users = getUsers();
+
+                if (isSignup) {
+                    if (password !== confirmPassword) {
+                        alert('Passwords do not match.');
+                        return;
+                    }
+                    if (users[username]) {
+                        alert('Username already exists. Please choose a different username.');
+                        return;
+                    }
+                    users[username] = password;
+                    saveUsers(users);
+                    setLoggedInUser(username);
+                    alert('Signup successful! Redirecting to dashboard...');
+                    window.location.href = '/';
+                } else {
+                    if (!users[username] || users[username] !== password) {
+                        alert('Invalid username or password.');
+                        return;
+                    }
+                    setLoggedInUser(username);
+                    alert('Login successful! Redirecting to dashboard...');
+                    window.location.href = '/';
+                }
+            });
+
+            document.getElementById('toggleMode').addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleMode();
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

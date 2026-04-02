@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(to bottom, #f5f0fa, #e8dff7); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { margin-top: 30px; }
+        h1 { color: #8a2be2; font-weight: 700; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        p { color: #666; font-size: 1rem; margin-bottom: 20px; }
+        .form-label { color: #8a2be2; font-weight: 600; }
+        .form-control { border: 2px solid #e8dff7; border-radius: 8px; padding: 0.75rem; transition: all 0.3s; }
+        .form-control:focus { border-color: #8a2be2; box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.15); }
+        .btn-primary { background-color: #8a2be2; border-color: #8a2be2; font-weight: 600; border-radius: 8px; transition: all 0.3s; }
+        .btn-primary:hover { background-color: #9c27b0; border-color: #9c27b0; box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3); }
+        .array-container { display: flex; justify-content: center; margin: 20px 0; background: linear-gradient(to bottom, #f5f0fa, white); padding: 20px; border: 3px solid #8a2be2; border-radius: 10px; box-shadow: 0 4px 12px rgba(138, 43, 226, 0.15); }
+        .array-item { width: 40px; height: 40px; background: linear-gradient(135deg, #8a2be2, #b77dff); border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center; margin: 3px; transition: background 0.5s; color: white; font-weight: 600; border-radius: 4px; box-shadow: 0 2px 4px rgba(138, 43, 226, 0.2); }
+        .array-item.highlight { background: linear-gradient(135deg, #ff6b9d, #ffa3c7); border-color: #ff1744; }
+        .array-item.found { background: linear-gradient(135deg, #4caf50, #81c784); border-color: #2e7d32; }
+        .array-item.out { background: linear-gradient(135deg, #999, #bbb); border-color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>🔎 Binary Search Visualizer</h1>
+        <p>Binary search finds an element in a sorted array. Time Complexity: O(log n). Requires sorted array.</p>
+
+        <div class="mb-3">
+            <label for="arr" class="form-label">Sorted Array (comma-separated, e.g., 1,2,3,4,5)</label>
+            <input type="text" id="arr" class="form-control" value="1,2,3,4,5,6,7,8,9,10">
+        </div>
+        <div class="mb-3">
+            <label for="target" class="form-label">Target Value</label>
+            <input type="number" id="target" class="form-control" value="7">
+        </div>
+        <button class="btn btn-primary" onclick="search()">Start Binary Search</button>
+
+        <div class="array-container" id="array"></div>
+
+        <div class="mt-4">
+            <h3>Explanation</h3>
+            <p id="exp">Click "Start Binary Search" to begin.</p>
+        </div>
+
+        <div class="mt-4">
+            <h3>How Binary Search Works</h3>
+            <ul>
+                <li>Compare target with middle element</li>
+                <li>If equal, found</li>
+                <li>If target > mid, search right half</li>
+                <li>If target < mid, search left half</li>
+                <li>Repeat until found or no elements left</li>
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <h3>Learning Resources</h3>
+            <ul>
+                <li><a href="https://visualgo.net/en/bsearch" target="_blank">VisuAlgo - Binary Search</a></li>
+                <li><a href="https://www.geeksforgeeks.org/binary-search/" target="_blank">GeeksforGeeks - Binary Search</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let arrayDiv = document.getElementById('array');
+        let items = [];
+
+        function displayArray(arr, left, right, mid) {
+            arrayDiv.innerHTML = '';
+            arr.forEach((val, idx) => {
+                let div = document.createElement('div');
+                div.className = 'array-item';
+                div.innerText = val;
+                if (idx === mid) div.classList.add('highlight');
+                else if (idx < left || idx > right) div.classList.add('out');
+                arrayDiv.appendChild(div);
+            });
+        }
+
+        async function search() {
+            let arr = document.getElementById('arr').value.split(',').map(Number).sort((a,b)=>a-b);
+            let target = Number(document.getElementById('target').value);
+            let left = 0, right = arr.length - 1;
+            let steps = [];
+
+            while (left <= right) {
+                let mid = Math.floor((left + right) / 2);
+                steps.push({arr: [...arr], left, right, mid, found: arr[mid] === target});
+                if (arr[mid] === target) {
+                    document.getElementById('exp').innerText = `Found ${target} at index ${mid}`;
+                    break;
+                } else if (arr[mid] < target) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            if (left > right) {
+                document.getElementById('exp').innerText = `${target} not found in the array.`;
+            }
+
+            // Animate steps
+            for (let step of steps) {
+                displayArray(step.arr, step.left, step.right, step.mid);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        // Initial display
+        displayArray([1,2,3,4,5,6,7,8,9,10], 0, 9, -1);
+    </script>
+
+    </script>
+
+    <script>
+        // Enforce login before visiting pages
+        if (!localStorage.getItem('dsa_user')) {
+            window.location.href = '/login/';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

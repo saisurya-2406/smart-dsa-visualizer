@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(to bottom, #f5f0fa, #e8dff7); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { margin-top: 30px; }
+        h1 { color: #8a2be2; font-weight: 700; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        p { color: #666; font-size: 1rem; margin-bottom: 20px; }
+        .form-control { border: 2px solid #e8dff7; border-radius: 8px; padding: 0.75rem; transition: all 0.3s; }
+        .form-control:focus { border-color: #8a2be2; box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.15); }
+        .btn-success { background-color: #4caf50; border-color: #4caf50; font-weight: 600; border-radius: 8px; transition: all 0.3s; }
+        .btn-success:hover { background-color: #66bb6a; box-shadow: 0 6px 12px rgba(76, 175, 80, 0.3); }
+        .btn-danger { background-color: #ff1744; border-color: #ff1744; font-weight: 600; border-radius: 8px; transition: all 0.3s; }
+        .btn-danger:hover { background-color: #ff5577; box-shadow: 0 6px 12px rgba(255, 23, 68, 0.3); }
+        .stack-container { display: flex; flex-direction: column-reverse; align-items: center; min-height: 300px; border: 3px solid #8a2be2; padding: 15px; background: linear-gradient(to bottom, #f5f0fa, white); border-radius: 10px; box-shadow: 0 4px 12px rgba(138, 43, 226, 0.15); }
+        .stack-item { width: 100px; height: 40px; background: linear-gradient(to bottom, #8a2be2, #9c27b0); border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center; margin: 5px; transition: all 0.5s; color: white; font-weight: 600; border-radius: 6px; box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3); }
+        .stack-item.push { animation: slideIn 0.5s; }
+        .stack-item.pop { animation: slideOut 0.5s; }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-50px); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>🗂️ Stack (LIFO) Visualizer</h1>
+        <p>A stack follows Last In First Out principle. Time Complexity: O(1) for push/pop.</p>
+
+        <div class="mb-3">
+            <input type="text" id="val" class="form-control" placeholder="Enter value to push">
+            <button class="btn btn-success mt-2" onclick="push()">Push</button>
+            <button class="btn btn-danger mt-2" onclick="pop()">Pop</button>
+        </div>
+
+        <div class="stack-container" id="stack"></div>
+
+        <div class="mt-4">
+            <h3>Explanation</h3>
+            <p id="exp">Operations will be explained here.</p>
+        </div>
+
+        <div class="mt-4">
+            <h3>Stack Operations</h3>
+            <ul>
+                <li>Push: Add element to top - O(1)</li>
+                <li>Pop: Remove element from top - O(1)</li>
+                <li>Peek: View top element without removing</li>
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <h3>Learning Resources</h3>
+            <ul>
+                <li><a href="https://visualgo.net/" target="_blank">VisuAlgo - Data Structures</a></li>
+                <li><a href="https://www.geeksforgeeks.org/stack-data-structure/" target="_blank">GeeksforGeeks - Stack</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let stack = [];
+        let stackDiv = document.getElementById('stack');
+
+        function push() {
+            let val = document.getElementById('val').value;
+            if (val) {
+                stack.push(val);
+                document.getElementById('exp').innerText = `Push: Added "${val}" to the top of the stack.`;
+                updateDisplay();
+                document.getElementById('val').value = '';
+            }
+        }
+
+        function pop() {
+            if (stack.length > 0) {
+                let val = stack.pop();
+                document.getElementById('exp').innerText = `Pop: Removed "${val}" from the top of the stack.`;
+                updateDisplay();
+            } else {
+                document.getElementById('exp').innerText = "Stack is empty. Cannot pop.";
+            }
+        }
+
+        function updateDisplay() {
+            stackDiv.innerHTML = '';
+            stack.forEach((item, index) => {
+                let div = document.createElement('div');
+                div.className = 'stack-item';
+                div.innerText = item;
+                stackDiv.appendChild(div);
+            });
+        }
+    </script>
+
+    <script>
+        // Enforce login before visiting pages
+        if (!localStorage.getItem('dsa_user')) {
+            window.location.href = '/login/';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

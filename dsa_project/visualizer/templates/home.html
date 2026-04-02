@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Visualizer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #f5f0fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero { background: linear-gradient(135deg, #8a2be2 0%, #9c27b0 100%); color: white; padding: 60px 0; box-shadow: 0 8px 16px rgba(138, 43, 226, 0.3); }
+        .hero h1 { font-size: 3.5rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); }
+        .hero .lead { font-size: 1.4rem; font-weight: 300; }
+        .stats { background: white; padding: 50px 0; text-align: center; border-top: 3px solid #8a2be2; border-bottom: 3px solid #8a2be2; }
+        .stats h2 { color: #8a2be2; font-weight: 700; margin-bottom: 30px; }
+        .stats h4 { color: #9c27b0; font-weight: 600; }
+        .stats .col-md-4 { padding: 30px 20px; }
+        .featured { background: linear-gradient(to bottom, #f5f0fa, #e8dff7); padding: 50px 0; }
+        .featured h2 { color: #8a2be2; font-weight: 700; }
+        .card { transition: all 0.3s ease; border: none; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(138, 43, 226, 0.25); }
+        .card-title { color: #8a2be2; font-weight: 600; font-size: 1.3rem; }
+        .card-text { color: #555; font-size: 0.95rem; }
+        .btn-primary { background-color: #8a2be2; border-color: #8a2be2; font-weight: 600; padding: 0.6rem 1.5rem; border-radius: 8px; transition: all 0.3s; }
+        .btn-primary:hover { background-color: #9c27b0; border-color: #9c27b0; box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3); }
+        .btn-primary:active { background-color: #7d1fb8; }
+    </style>
+</head>
+<body>
+    <div class="hero text-center">
+        <h1 class="display-4">✨ SMART DSA VISUALIZER</h1>
+        <p class="lead">Master Data Structures and Algorithms with Interactive Visualizations</p>
+    </div>
+
+    <div class="stats">
+        <div class="container">
+            <h2>🚀 Why Choose Our Visualizer?</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>16+ Topics</h4>
+                    <p>Cover stacks, queues, trees, graphs, sorting, searching, and more.</p>
+                </div>
+                <div class="col-md-4">
+                    <h4>Real-time Animations</h4>
+                    <p>Step-by-step visualizations with user inputs.</p>
+                </div>
+                <div class="col-md-4">
+                    <h4>3D Visualizations</h4>
+                    <p>Advanced 3D models for complex structures.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="featured">
+        <div class="container">
+            <h2 class="text-center mb-4">📚 Explore Data Structures & Algorithms</h2>
+            <div class="row">
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Stack</h5>
+                        <p class="card-text">LIFO data structure. Visualize push, pop operations with animations.</p>
+                        <a href="/stack/" class="btn btn-primary">Explore Stack</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Queue</h5>
+                        <p class="card-text">FIFO data structure. See enqueue, dequeue with step-by-step animations.</p>
+                        <a href="/queue/" class="btn btn-primary">Explore Queue</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Linked List</h5>
+                        <p class="card-text">Dynamic data structure with nodes. Insert/delete at head/tail.</p>
+                        <a href="/linkedlist/" class="btn btn-primary">Explore Linked List</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Trees</h5>
+                        <p class="card-text">Various tree structures: BST, AVL, etc. Insert, delete, traversals with visualizations.</p>
+                        <a href="/tree/" class="btn btn-primary">Explore Trees</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Hash Table</h5>
+                        <p class="card-text">Key-value store with hash function. Handle collisions with chaining.</p>
+                        <a href="/hashtable/" class="btn btn-primary">Explore Hash Table</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Graph Algorithms</h5>
+                        <p class="card-text">BFS, DFS, A*, Dijkstra, Kruskal. Interactive graph input and animations. Shows optimal paths based on algorithm.</p>
+                        <a href="/bfs/" class="btn btn-primary">Explore Graphs</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sorting Algorithms</h5>
+                        <p class="card-text">Bubble, Quick, Merge, Insertion sort. Compare time complexities with animations.</p>
+                        <a href="/sorting/" class="btn btn-primary">Explore Sorting</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Searching Algorithms</h5>
+                        <p class="card-text">Linear and Binary search with step-by-step visualizations.</p>
+                        <a href="/linear/" class="btn btn-primary">Explore Searching</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enforce login before visiting dashboard
+        let currentUser = localStorage.getItem('dsa_user');
+        if (!currentUser) {
+            window.location.href = '/login/';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

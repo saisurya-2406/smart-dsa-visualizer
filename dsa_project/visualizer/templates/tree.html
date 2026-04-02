@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Tree Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { background-color: #f5f1fa; color: #333; }
+        .container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(138, 43, 226, 0.1); }
+        h1 { color: #8a2be2; border-bottom: 3px solid #8a2be2; padding-bottom: 10px; }
+        h3 { color: #8a2be2; margin-top: 20px; }
+        .btn-success { background-color: #8a2be2; border-color: #8a2be2; }
+        .btn-success:hover { background-color: #6a1ba2; }
+        .btn-danger { background-color: #ff6b9d; border-color: #ff6b9d; }
+        .btn-info { background-color: #00bcd4; border-color: #00bcd4; }
+        .btn-secondary { background-color: #9c27b0; border-color: #9c27b0; }
+        .btn-outline-primary { color: #8a2be2; border-color: #8a2be2; }
+        .btn-outline-primary:hover { background-color: #8a2be2; color: white; }
+        #tree { border: 2px solid #8a2be2; background: linear-gradient(135deg, #f0e6ff 0%, #e6e0ff 100%); border-radius: 8px; }
+        .node { fill: #8a2be2; stroke: white; stroke-width: 3; }
+        .node text { fill: white; font-weight: bold; font-size: 14px; }
+        .link { stroke: #9c27b0; stroke-width: 2; fill: none; }
+        .form-control, .form-select { border-color: #8a2be2; }
+        .form-control:focus, .form-select:focus { border-color: #8a2be2; box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.25); }
+        .form-label { color: #8a2be2; font-weight: 600; }
+        a { color: #8a2be2; text-decoration: none; }
+        a:hover { color: #6a1ba2; text-decoration: underline; }
+        p { line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>🌴 Trees Visualizer</h1>
+        <p>Explore different tree structures: BST, AVL, and more. Operations include insert, delete, search with visualizations.</p>
+
+        <div class="mb-3">
+            <label for="treeType" class="form-label">Select Tree Type:</label>
+            <select id="treeType" class="form-select" onchange="changeTreeType()">
+                <option value="bst">Binary Search Tree (BST)</option>
+                <option value="avl">AVL Tree (Balanced)</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <input type="number" id="val" class="form-control" placeholder="Enter number">
+            <button class="btn btn-success mt-2" onclick="insert()">Insert</button>
+            <button class="btn btn-danger mt-2" onclick="deleteNode()">Delete</button>
+            <button class="btn btn-info mt-2" onclick="search()">Search</button>
+            <button class="btn btn-secondary mt-2" onclick="clearTree()">Clear Tree</button>
+        </div>
+
+        <div class="mt-4">
+            <svg id="tree" width="800" height="500"></svg>
+        </div>
+
+        <div class="mt-4">
+            <h3>Traversals</h3>
+            <button class="btn btn-outline-primary" onclick="inorder()">Inorder</button>
+            <button class="btn btn-outline-primary" onclick="preorder()">Preorder</button>
+            <button class="btn btn-outline-primary" onclick="postorder()">Postorder</button>
+            <p id="traversal" class="mt-2"></p>
+        </div>
+
+        <div class="mt-4">
+            <h3>Explanation</h3>
+            <p id="exp">Operations will be explained here.</p>
+        </div>
+
+        <div class="mt-4">
+            <h3>Tree Properties</h3>
+            <div id="properties">
+                <p><strong>BST:</strong> Left subtree < root < right subtree. Search/Insert/Delete O(h).</p>
+                <p><strong>AVL:</strong> Balanced BST where height difference ≤ 1. All operations O(log n).</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h3>Learning Resources</h3>
+            <ul>
+                <li><a href="https://visualgo.net/en/bst" target="_blank">VisuAlgo - BST Visualization</a></li>
+                <li><a href="https://www.geeksforgeeks.org/binary-search-tree-data-structure/" target="_blank">GeeksforGeeks - BST</a></li>
+                <li><a href="https://www.geeksforgeeks.org/avl-tree-set-1-insertion/" target="_blank">GeeksforGeeks - AVL Trees</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let treeData = null;
+        let svg = d3.select("#tree");
+        let width = 800, height = 500;
+
+        function insert() {
+            let val = parseInt(document.getElementById('val').value);
+            if (isNaN(val)) return;
+            treeData = insertNode(treeData, val);
+            document.getElementById('exp').innerText = `Inserted ${val}.`;
+            drawTree();
+            document.getElementById('val').value = '';
+        }
+
+        function insertNode(node, val) {
+            if (!node) return {value: val, left: null, right: null};
+            if (val < node.value) node.left = insertNode(node.left, val);
+            else node.right = insertNode(node.right, val);
+            return node;
+        }
+
+        function deleteNode() {
+            let val = parseInt(document.getElementById('val').value);
+            if (isNaN(val)) return;
+            treeData = deleteNodeRec(treeData, val);
+            document.getElementById('exp').innerText = `Deleted ${val} if existed.`;
+            drawTree();
+            document.getElementById('val').value = '';
+        }
+
+        function deleteNodeRec(node, val) {
+            if (!node) return node;
+            if (val < node.value) node.left = deleteNodeRec(node.left, val);
+            else if (val > node.value) node.right = deleteNodeRec(node.right, val);
+            else {
+                if (!node.left) return node.right;
+                if (!node.right) return node.left;
+                node.value = minValue(node.right);
+                node.right = deleteNodeRec(node.right, node.value);
+            }
+            return node;
+        }
+
+        function minValue(node) {
+            let minv = node.value;
+            while (node.left) {
+                minv = node.left.value;
+                node = node.left;
+            }
+            return minv;
+        }
+
+        function search() {
+            let val = parseInt(document.getElementById('val').value);
+            if (isNaN(val)) return;
+            let found = searchNode(treeData, val);
+            document.getElementById('exp').innerText = found ? `Found ${val}.` : `${val} not found.`;
+        }
+
+        function searchNode(node, val) {
+            if (!node) return false;
+            if (node.value === val) return true;
+            return val < node.value ? searchNode(node.left, val) : searchNode(node.right, val);
+        }
+
+        function drawTree() {
+            svg.selectAll("*").remove();
+            if (!treeData) {
+                svg.append("text").attr("x", 400).attr("y", 250).attr("text-anchor", "middle").attr("fill", "#999").text("Tree is empty. Insert nodes to start.");
+                return;
+            }
+
+            let root = d3.hierarchy(treeData, d => [d.left, d.right].filter(n => n));
+            let treeLayout = d3.tree().size([width - 100, height - 100]);
+            treeLayout(root);
+
+            // Draw links
+            svg.append("g")
+                .selectAll("line")
+                .data(root.links())
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("x1", d => d.source.x + 50)
+                .attr("y1", d => d.source.y + 50)
+                .attr("x2", d => d.target.x + 50)
+                .attr("y2", d => d.target.y + 50);
+
+            // Draw nodes
+            let nodes = svg.append("g")
+                .selectAll("circle")
+                .data(root.descendants())
+                .enter().append("circle")
+                .attr("class", "node")
+                .attr("r", 25)
+                .attr("cx", d => d.x + 50)
+                .attr("cy", d => d.y + 50);
+
+            // Draw labels
+            svg.append("g")
+                .selectAll("text")
+                .data(root.descendants())
+                .enter().append("text")
+                .attr("x", d => d.x + 50)
+                .attr("y", d => d.y + 55)
+                .attr("text-anchor", "middle")
+                .attr("font-weight", "bold")
+                .attr("fill", "white")
+                .attr("font-size", "14px")
+                .text(d => d.data.value);
+        }
+
+        function changeTreeType() {
+            let type = document.getElementById('treeType').value;
+            document.getElementById('exp').innerText = `Switched to ${type === 'bst' ? 'BST' : 'AVL'}.`;
+        }
+
+        function clearTree() {
+            treeData = null;
+            drawTree();
+            document.getElementById('exp').innerText = 'Tree cleared.';
+        }
+
+        function inorder() {
+            let result = [];
+            function traverse(node) {
+                if (!node) return;
+                traverse(node.left);
+                result.push(node.value);
+                traverse(node.right);
+            }
+            traverse(treeData);
+            document.getElementById('traversal').innerText = 'Inorder: ' + (result.length > 0 ? result.join(' → ') : 'Empty');
+        }
+
+        function preorder() {
+            let result = [];
+            function traverse(node) {
+                if (!node) return;
+                result.push(node.value);
+                traverse(node.left);
+                traverse(node.right);
+            }
+            traverse(treeData);
+            document.getElementById('traversal').innerText = 'Preorder: ' + (result.length > 0 ? result.join(' → ') : 'Empty');
+        }
+
+        function postorder() {
+            let result = [];
+            function traverse(node) {
+                if (!node) return;
+                traverse(node.left);
+                traverse(node.right);
+                result.push(node.value);
+            }
+            traverse(treeData);
+            document.getElementById('traversal').innerText = 'Postorder: ' + (result.length > 0 ? result.join(' → ') : 'Empty');
+        }
+    </script>
+
+    <script>
+        // Enforce login before visiting pages
+        if (!localStorage.getItem('dsa_user')) {
+            window.location.href = '/login/';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

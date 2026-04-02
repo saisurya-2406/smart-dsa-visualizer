@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A* Algorithm Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(to bottom, #f5f0fa, #e8dff7); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { margin-top: 30px; }
+        h1 { color: #8a2be2; font-weight: 700; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        p { color: #666; font-size: 1rem; margin-bottom: 20px; }
+        .form-label { color: #8a2be2; font-weight: 600; }
+        .form-control { border: 2px solid #e8dff7; border-radius: 8px; padding: 0.75rem; transition: all 0.3s; }
+        .form-control:focus { border-color: #8a2be2; box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.15); }
+        .btn-primary { background-color: #8a2be2; border-color: #8a2be2; font-weight: 600; border-radius: 8px; transition: all 0.3s; }
+        .btn-primary:hover { background-color: #9c27b0; border-color: #9c27b0; box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3); }
+        #graph { border: 3px solid #8a2be2; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(138, 43, 226, 0.15); }
+        .node { fill: #b77dff; stroke: #8a2be2; stroke-width: 2; }
+        .node.visited { fill: #ffeb3b; stroke: #fbc02d; stroke-width: 2; }
+        .node.path { fill: #4caf50; stroke: #2e7d32; stroke-width: 2; }
+        .link { stroke: #bbb; stroke-width: 2; }
+        .link.path { stroke: #ff1744; stroke-width: 3; }
+        .weight-label { font-size: 12px; fill: #333; pointer-events: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>🏹 A* Algorithm Visualizer</h1>
+        <p>A* is a pathfinding algorithm that uses heuristics to find the shortest path. Time Complexity: O(b^d) in worst case, but often better with good heuristics.</p>
+
+        <form id="astarForm">
+            <div class="mb-3">
+                <label for="graphInput" class="form-label">Graph (JSON format, e.g., {"A": [["B",1], ["C",3]], "B": [["D",1]], ...})</label>
+                <textarea class="form-control" id="graphInput" rows="3">{"A": [["B",1], ["C",3]], "B": [["D",1]], "C": [["D",1]], "D": []}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="heuristicInput" class="form-label">Heuristic (JSON, e.g., {"A":3, "B":2, "C":1, "D":0})</label>
+                <input type="text" class="form-control" id="heuristicInput" value='{"A":3, "B":2, "C":1, "D":0}'>
+            </div>
+            <div class="mb-3">
+                <label for="startInput" class="form-label">Start Node</label>
+                <input type="text" class="form-control" id="startInput" value="A">
+            </div>
+            <div class="mb-3">
+                <label for="goalInput" class="form-label">Goal Node</label>
+                <input type="text" class="form-control" id="goalInput" value="D">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="runAstar()">Run A* Visualization</button>
+        </form>
+
+        <div class="mt-4">
+            <h3>Visualization</h3>
+            <svg id="graph" width="600" height="400"></svg>
+        </div>
+
+        <div class="mt-4">
+            <h3>Path Found</h3>
+            <p id="output">Path will appear here.</p>
+        </div>
+
+        <div class="mt-4">
+            <h3>Explanation</h3>
+            <p>A* uses f(n) = g(n) + h(n), where g is cost from start, h is heuristic to goal. It explores nodes with lowest f value.</p>
+        </div>
+
+        <div class="mt-4">
+            <h3>Learning Resources</h3>
+            <ul>
+                <li><a href="https://www.geeksforgeeks.org/a-search-algorithm/" target="_blank">GeeksforGeeks - A* Algorithm</a></li>
+                <li><a href="https://visualgo.net/en/graphds" target="_blank">VisuAlgo - Graph Algorithms</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let svg = d3.select("#graph");
+        let width = 600, height = 400;
+
+        function runAstar() {
+            let graph = JSON.parse(document.getElementById("graphInput").value);
+            let heuristic = JSON.parse(document.getElementById("heuristicInput").value);
+            let start = document.getElementById("startInput").value;
+            let goal = document.getElementById("goalInput").value;
+
+            // Improved A* implementation
+            let open = [{node: start, f: (heuristic[start] || 0), g: 0, parent: null}];
+            let closed = new Set();
+            let gScore = {[start]: 0};
+            let cameFrom = {};
+
+            function step() {
+                if (open.length === 0) {
+                    document.getElementById("output").innerText = "No path found.";
+                    return;
+                }
+
+                open.sort((a, b) => a.f - b.f);
+                let current = open.shift();
+                if (current.node === goal) {
+                    // Reconstruct path
+                    let path = [];
+                    let temp = current.node;
+                    while (temp !== undefined) {
+                        path.push(temp);
+                        temp = cameFrom[temp];
+                    }
+                    path.reverse();
+                    document.getElementById("output").innerText = "Path: " + path.join(" → ");
+                    return;
+                }
+
+                closed.add(current.node);
+
+                for (let [neighbor, cost] of graph[current.node] || []) {
+                    if (closed.has(neighbor)) continue;
+                    let tentativeG = gScore[current.node] + cost;
+                    if (!(neighbor in gScore) || tentativeG < gScore[neighbor]) {
+                        cameFrom[neighbor] = current.node;
+                        gScore[neighbor] = tentativeG;
+                        let f = tentativeG + (heuristic[neighbor] || 0);
+                        let existing = open.find(n => n.node === neighbor);
+                        if (!existing) {
+                            open.push({node: neighbor, f: f, g: tentativeG, parent: current.node});
+                        } else if (f < existing.f) {
+                            existing.f = f;
+                            existing.parent = current.node;
+                        }
+                    }
+                }
+
+                // Animate
+                d3.selectAll(".node").filter(d => d.id === current.node).classed("visited", true);
+                setTimeout(step, 500);
+            }
+
+            drawGraph(graph);
+            step();
+        }
+
+        function drawGraph(graph) {
+            svg.selectAll("*").remove();
+            let nodes = Object.keys(graph).map(id => ({id}));
+            let links = [];
+            nodes.forEach(n => {
+                graph[n.id].forEach(([target, weight]) => {
+                    links.push({source: n.id, target, weight});
+                });
+            });
+
+            let simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-300))
+                .force("center", d3.forceCenter(width / 2, height / 2));
+
+            let link = svg.append("g")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("class", "link");
+
+            let node = svg.append("g")
+                .selectAll("circle")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("class", "node")
+                .attr("r", 20);
+
+            let label = svg.append("g")
+                .selectAll("text")
+                .data(nodes)
+                .enter().append("text")
+                .attr("dy", ".35em")
+                .attr("text-anchor", "middle")
+                .text(d => d.id);
+
+            simulation.on("tick", () => {
+                link.attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node.attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+
+                label.attr("x", d => d.x)
+                     .attr("y", d => d.y);
+            });
+        }
+    </script>
+
+    <script>
+        // Enforce login before visiting pages
+        if (!localStorage.getItem('dsa_user')) {
+            window.location.href = '/login/';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Render service configuration (optional)
+# Set environment variables in the Render dashboard instead of committing secrets.
+services:
+  - type: web
+    name: dsa-project-web
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn dsa_project.wsgi --log-file -"
+    # Optional env vars can be defined here for convenience, but prefer setting them in the dashboard:
+    # envVars:
+    #  - key: SECRET_KEY
+    #    value: "__SET_IN_DASHBOARD__"
+    #  - key: DEBUG
+    #    value: "False"
+    #  - key: ALLOWED_HOSTS
+    #    value: "yourdomain.com,localhost"

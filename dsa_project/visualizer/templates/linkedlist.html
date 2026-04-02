@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linked List Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(to bottom, #f5f0fa, #e8dff7); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { margin-top: 30px; }
+        h1 { color: #8a2be2; font-weight: 700; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        p { color: #666; font-size: 1rem; margin-bottom: 20px; }
+        .form-label { color: #8a2be2; font-weight: 600; }
+        .form-control, .form-select { border: 2px solid #e8dff7; border-radius: 8px; padding: 0.75rem; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: #8a2be2; box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.15); }
+        .btn-primary { background-color: #8a2be2; border-color: #8a2be2; font-weight: 600; border-radius: 8px; transition: all 0.3s; }
+        .btn-primary:hover { background-color: #9c27b0; border-color: #9c27b0; box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3); }
+        .btn-secondary { background-color: #ccc; border-color: #ccc; color: #333; font-weight: 600; border-radius: 8px; }
+        .btn-secondary:hover { background-color: #aaa; }
+        .list-container { display: flex; align-items: center; min-height: 100px; border: 3px solid #8a2be2; padding: 15px; background: linear-gradient(to right, #f5f0fa, white); overflow-x: auto; border-radius: 10px; box-shadow: 0 4px 12px rgba(138, 43, 226, 0.15); }
+        .node { width: 60px; height: 40px; background: linear-gradient(135deg, #8a2be2, #9c27b0); border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center; margin: 3px; position: relative; transition: all 0.5s; color: white; font-weight: 600; border-radius: 6px; box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3); }
+        .arrow { margin: 0 8px; font-size: 20px; color: #8a2be2; font-weight: bold; }
+        .node.add { animation: fadeIn 0.5s; }
+        .node.remove { animation: fadeOut 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.5); } }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>🔗 Linked List Visualizer</h1>
+        <p>A linked list is a linear data structure where elements are stored in nodes, each pointing to the next. Time Complexity: Insert/Delete O(1) at head, Search O(n).</p>
+
+        <div class="mb-3">
+            <label for="listType" class="form-label">Select Linked List Type:</label>
+            <select id="listType" class="form-select">
+                <option value="singly">Singly Linked List</option>
+                <option value="doubly">Doubly Linked List</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <input type="text" id="val" class="form-control" placeholder="Enter value">
+            <button class="btn btn-success mt-2" onclick="insertAtHead()">Insert at Head</button>
+            <button class="btn btn-success mt-2" onclick="insertAtTail()">Insert at Tail</button>
+            <button class="btn btn-warning mt-2" onclick="insertAtPosition()">Insert at Position</button>
+            <button class="btn btn-danger mt-2" onclick="deleteHead()">Delete Head</button>
+            <button class="btn btn-danger mt-2" onclick="deleteTail()">Delete Tail</button>
+            <button class="btn btn-info mt-2" onclick="search()">Search</button>
+            <button class="btn btn-secondary mt-2" onclick="reverseList()">Reverse</button>
+        </div>
+
+        <div class="list-container" id="list"></div>
+
+        <div class="mt-4">
+            <h3>Explanation</h3>
+            <p id="exp">Operations will be explained here.</p>
+        </div>
+
+        <div class="mt-4">
+            <h3>Linked List Types</h3>
+            <ul>
+                <li><strong>Singly Linked List:</strong> Each node points to next</li>
+                <li><strong>Doubly Linked List:</strong> Nodes point to next and previous</li>
+                <li><strong>Circular Linked List:</strong> Last node points back to first</li>
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <h3>Learning Resources</h3>
+            <ul>
+                <li><a href="https://www.geeksforgeeks.org/data-structures/linked-list/" target="_blank">GeeksforGeeks - Linked Lists</a></li>
+                <li><a href="https://visualgo.net/en/list" target="_blank">VisuAlgo - Linked List</a></li>
+                <li><a href="https://www.youtube.com/results?search_query=linked+list+tutorial" target="_blank">YouTube - Linked List Tutorials</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let list = [];
+        let listDiv = document.getElementById('list');
+
+        function insertAtHead() {
+            let val = document.getElementById('val').value;
+            if (val) {
+                list.unshift(val);
+                document.getElementById('exp').innerText = `Inserted "${val}" at head. Length: ${list.length}`;
+                updateDisplay();
+                document.getElementById('val').value = '';
+            }
+        }
+
+        function insertAtTail() {
+            let val = document.getElementById('val').value;
+            if (val) {
+                list.push(val);
+                document.getElementById('exp').innerText = `Inserted "${val}" at tail. Length: ${list.length}`;
+                updateDisplay();
+                document.getElementById('val').value = '';
+            }
+        }
+
+        function insertAtPosition() {
+            let val = document.getElementById('val').value;
+            let pos = prompt("Enter position (0-indexed):");
+            if (val && pos !== null) {
+                pos = parseInt(pos);
+                if (pos >= 0 && pos <= list.length) {
+                    list.splice(pos, 0, val);
+                    document.getElementById('exp').innerText = `Inserted "${val}" at position ${pos}.`;
+                    updateDisplay();
+                    document.getElementById('val').value = '';
+                } else {
+                    document.getElementById('exp').innerText = "Invalid position.";
+                }
+            }
+        }
+
+        function deleteHead() {
+            if (list.length > 0) {
+                let val = list.shift();
+                document.getElementById('exp').innerText = `Deleted "${val}" from head. Length: ${list.length}`;
+                updateDisplay();
+            } else {
+                document.getElementById('exp').innerText = "List is empty.";
+            }
+        }
+
+        function deleteTail() {
+            if (list.length > 0) {
+                let val = list.pop();
+                document.getElementById('exp').innerText = `Deleted "${val}" from tail. Length: ${list.length}`;
+                updateDisplay();
+            } else {
+                document.getElementById('exp').innerText = "List is empty.";
+            }
+        }
+
+        function search() {
+            let val = document.getElementById('val').value;
+            if (val) {
+                let index = list.indexOf(val);
+                if (index !== -1) {
+                    document.getElementById('exp').innerText = `Found "${val}" at position ${index}.`;
+                } else {
+                    document.getElementById('exp').innerText = `"${val}" not found in list.`;
+                }
+            }
+        }
+
+        function reverseList() {
+            list.reverse();
+            document.getElementById('exp').innerText = "List reversed.";
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            listDiv.innerHTML = '';
+            list.forEach((item, index) => {
+                let node = document.createElement('div');
+                node.className = 'node';
+                node.innerText = item;
+                listDiv.appendChild(node);
+                if (index < list.length - 1) {
+                    let arrow = document.createElement('span');
+                    arrow.className = 'arrow';
+                    arrow.innerText = '→';
+                    listDiv.appendChild(arrow);
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // Enforce login before visiting pages
+        if (!localStorage.getItem('dsa_user')) {
+            window.location.href = '/login/';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
