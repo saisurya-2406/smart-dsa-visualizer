@@ -5,7 +5,7 @@ from visualizer import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', views.sorting),   # Dashboard / default page
+    path('', views.home),   # Dashboard page (choose algorithms)
     path('login/', views.login),
 
     path('stack/', views.stack),
